@@ -3,97 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Stealth Title and Logo -->
     <title>Google Classroom</title>
-    <link rel="icon" type="image/png" href="https://ssl.gstatic.com/classroom/favicon.png">
+    <link rel="icon" href="https://ssl.gstatic.com/classroom/favicon.png">
     
     <style>
-        body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; background-color: #f4f4f9; padding: 20px; }
-        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 750px; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f2f5; }
         
-        .auth-box { text-align: center; margin-bottom: 10px; }
-        .auth-box input { display: block; width: 80%; margin: 10px auto; padding: 10px; }
-        .auth-box button { width: 80%; padding: 10px; background: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .toggle-link { color: #0056b3; cursor: pointer; text-decoration: underline; font-size: 0.9em; }
-
-        #chat-interface { display: none; }
-        .flex-row { display: flex; gap: 20px; height: 450px; }
-        #user-panel { width: 35%; border-right: 1px solid #ddd; padding-right: 10px; display: flex; flex-direction: column; }
-        #chat-panel { width: 65%; display: flex; flex-direction: column; }
+        #auth-interface { max-width: 400px; margin: 100px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; }
+        input[type="text"], input[type="password"] { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { padding: 10px 20px; border: none; border-radius: 4px; background: #007bff; color: white; cursor: pointer; }
+        button:hover { background: #0056b3; }
         
-        #contact-list { flex-grow: 1; border: 1px solid #ccc; overflow-y: scroll; border-radius: 4px; background: white; }
-        .contact-item { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-        .contact-item:hover { background: #f0f0f0; }
-        .contact-item.active { background: #e6f7ff; border-left: 4px solid #0056b3; }
+        #chat-interface { display: none; height: 100vh; flex-direction: row; }
         
-        .contact-info { display: flex; flex-direction: column; }
-        .contact-name { font-weight: bold; }
-        .status-text { font-size: 0.75em; color: gray; }
+        #sidebar { width: 300px; background: white; border-right: 1px solid #ccc; display: flex; flex-direction: column; }
+        #sidebar-header { padding: 20px; background: #f8f9fa; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; align-items: center;}
+        #search-container { padding: 10px; display: flex; gap: 5px; }
+        #search-input { width: 50%; margin: 0; }
+        #contact-list { flex: 1; overflow-y: auto; }
+        
+        .contact-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .contact-item:hover { background: #f1f1f1; }
+        .contact-item.active { background: #e6f7ff; border-left: 4px solid #007bff; }
+        .contact-item.unread .contact-name { font-weight: bold; }
+        .contact-item .dot { display: none; }
+        .contact-item.unread .dot { display: inline; }
+        
+        .status-text { font-size: 0.8em; color: gray; }
         .status-text.online { color: #28a745; font-weight: bold; }
         
-        .dot { color: #28a745; display: none; font-size: 1.2em; }
-        .contact-item.unread .dot { display: block; }
-
-        #messages { flex-grow: 1; border: 1px solid #ddd; overflow-y: scroll; padding: 10px; margin-bottom: 10px; background: #fafafa; }
-        .msg { margin-bottom: 8px; padding: 5px; border-radius: 4px; }
-        .sender { font-weight: bold; color: #0056b3; }
-        .time { font-size: 0.75em; color: #888; margin-right: 5px; }
+        #main-chat { flex: 1; display: flex; flex-direction: column; background: #ece5dd; }
+        #chat-header { padding: 20px; background: white; border-bottom: 1px solid #ccc; font-size: 1.1em; display: flex; align-items: center; }
         
-        input[type="text"], input[type="password"] { border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; padding: 10px;}
-        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px;}
-        .search-row { display: flex; gap: 5px; margin-bottom: 10px; }
-        #search-input { width: 100%; padding: 10px; }
+        #messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; }
+        .msg { max-width: 65%; padding: 10px 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; }
+        .time { font-size: 0.7em; color: #888; display: block; margin-bottom: 4px;}
+        .sender { font-weight: bold; margin-right: 5px; }
+        
+        #typing-indicator { font-size: 0.8em; color: gray; padding: 5px 20px; height: 15px; background: #ece5dd; }
+        #input-container { padding: 15px; background: white; display: flex; align-items: center; gap: 10px; border-top: 1px solid #ccc; }
+        #msg-input { flex: 1; margin: 0; }
     </style>
 </head>
 <body>
 
-    <div class="container" id="auth-interface">
-        <h2 style="text-align: center;">Welcome to Class</h2>
+    <div id="auth-interface">
+        <h2>Sign In</h2>
         
-        <div id="login-section" class="auth-box">
-            <h3>Login</h3>
+        <div id="login-section">
             <input type="text" id="log-user" placeholder="Username">
             <input type="password" id="log-pass" placeholder="Password">
-            <button onclick="attemptLogin()">Login</button>
-            <p>Need an account? <span class="toggle-link" onclick="toggleAuth()">Sign up here</span></p>
+            <button onclick="attemptLogin()">Log In</button>
+            <p style="font-size: 0.9em; cursor: pointer; color: #007bff; text-decoration: underline;" onclick="toggleAuth()">Need an account? Sign Up</p>
         </div>
 
-        <div id="signup-section" class="auth-box" style="display: none;">
-            <h3>Create Account</h3>
-            <input type="text" id="sign-user" placeholder="New Username">
-            <input type="password" id="sign-pass" placeholder="New Password">
+        <div id="signup-section" style="display: none;">
+            <input type="text" id="sign-user" placeholder="Choose a Username">
+            <input type="password" id="sign-pass" placeholder="Choose a Password">
             <button onclick="attemptSignup()">Sign Up</button>
-            <p>Already have an account? <span class="toggle-link" onclick="toggleAuth()">Login here</span></p>
+            <p style="font-size: 0.9em; cursor: pointer; color: #007bff; text-decoration: underline;" onclick="toggleAuth()">Already have an account? Log In</p>
         </div>
     </div>
 
-    <div class="container" id="chat-interface">
-        <div class="header-bar">
-            <h3 style="margin: 0;">User: <span id="my-name-display" style="color: #0056b3;"></span></h3>
-            <button style="background: #dc3545;" onclick="logout()">Log Out</button>
-        </div>
-        <div class="flex-row">
-            <div id="user-panel">
-                <div class="search-row">
-                    <input type="text" id="search-input" placeholder="Add user...">
-                    <button onclick="searchForUser()">Add</button>
+    <div id="chat-interface">
+        
+        <div id="sidebar">
+            <div id="sidebar-header">
+                <div>
+                    <strong><span id="my-name-display"></span></strong>
                 </div>
-                <div id="contact-list"></div>
+                <button onclick="logout()" style="padding: 6px 12px; background: #dc3545; font-size: 0.9em;">Logout</button>
             </div>
-            <div id="chat-panel">
-                <h3 style="margin-top: 0; margin-bottom: 10px;" id="chat-header">Select a conversation</h3>
+            
+            <div id="search-container">
+                <input type="text" id="search-input" placeholder="Find user...">
+                <button onclick="searchForUser()" style="width: 25%;">Add</button>
+                <button onclick="createGroup()" style="width: 25%; background: #28a745;">Group</button>
+            </div>
+
+            <div id="contact-list"></div>
+        </div>
+
+        <div id="main-chat">
+            <div id="chat-header">Select a conversation</div>
+            
+            <div id="messages"></div>
+            
+            <div id="typing-indicator"></div>
+            
+            <div id="input-container">
+                <button id="camera-btn" onclick="document.getElementById('camera-input').click()" style="background:none; border:none; font-size:1.5em; color: #444; padding: 0; outline: none;" title="Send Picture">📷</button>
+                <input type="file" id="camera-input" accept="image/*" style="display: none;" onchange="processAndSendImage(event)">
                 
-                <div id="messages"></div>
-                <div id="typing-indicator" style="font-size: 0.85em; color: #888; height: 15px; margin-bottom: 5px; font-style: italic;"></div>
-                
-                <div style="display: flex; gap: 5px;">
-                    <input type="text" id="msg-input" placeholder="Type a message..." style="width: 100%; padding: 10px;" onkeypress="checkEnter(event)">
-                    <button onclick="sendMessage()">Send</button>
-                </div>
+                <input type="text" id="msg-input" placeholder="Type a message..." onkeypress="checkEnter(event)">
+                <button onclick="sendMessage()">Send</button>
             </div>
         </div>
+
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
